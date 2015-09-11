@@ -185,14 +185,12 @@ namespace MetroServerInterface
             XmlElement element = (XmlElement)xmlDoc.AppendChild(xmlDoc.CreateElement("details"));
             element.AppendChild(xmlDoc.CreateElement("username")).InnerText = txtUsername.Text;
             element.AppendChild(xmlDoc.CreateElement("password")).InnerText = Base64Encode(txtPassword.Text);
-            //doc.Save("user.xml");
             File.WriteAllText("user.bin", Base64Encode(xmlDoc.OuterXml));
         }
 
         public void loadXML()
         {
             XmlDocument xmlDoc = new XmlDocument();
-            //xmlDoc.Load("db.xml");
             try
             {
                 xmlDoc.Load("http://127.0.0.1/hc/db.xml");
