@@ -93,7 +93,6 @@ namespace MetroServerInterface
                                 string xml = "";
                                 if (mainForm.InvokeRequired)
                                 {
-
                                     mainForm.Invoke(new Action(() => xml = mainForm.getTaskList()));
                                 }
                                 if (!xml.Equals(""))
@@ -103,6 +102,19 @@ namespace MetroServerInterface
                                 else
                                 {
                                     msg = Encoding.ASCII.GetBytes("GET_TASK_LIST_FAILED");
+                                    mainForm.logError(msg.ToString());
+                                }
+                            }
+                            else if (incomming.StartsWith("removeTask", StringComparison.OrdinalIgnoreCase))
+                            {
+                                string name = incomming.Substring(incomming.IndexOf(":")+1);
+                                if (mainForm.deleteTask(name))
+                                {
+                                    msg = Encoding.ASCII.GetBytes("TASK_DELETED");
+                                }
+                                else
+                                {
+                                    msg = Encoding.ASCII.GetBytes("FAILED_TO_DELETE_TASK");
                                     mainForm.logError(msg.ToString());
                                 }
                             }

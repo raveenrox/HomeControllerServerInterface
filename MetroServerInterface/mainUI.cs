@@ -264,7 +264,9 @@ namespace MetroServerInterface
                 taskService.GetFolder("HAS").DeleteTask(name, false);
                 loadTasks();
                 return true;
-            } catch (Exception e) { logError(e); return false; }
+            } catch(System.Runtime.InteropServices.COMException ex) { Console.Write("1"); return true; }
+            catch(System.InvalidOperationException) { return true; }
+            catch (Exception e) { logError(e); Console.Write("2"); return false; }
         }
 
         public void loadTasks()
