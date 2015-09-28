@@ -9,6 +9,8 @@ using System.Linq;
 using System.Data;
 using System.Xml;
 using System.IO;
+using System.Xml.XPath;
+using System.Collections.Generic;
 
 namespace MetroServerInterface
 {
@@ -28,7 +30,6 @@ namespace MetroServerInterface
         public mainUI()
         {
             InitializeComponent();
-            loadUserDetails();
             try
             {
                 taskService = new TaskService();
@@ -39,6 +40,7 @@ namespace MetroServerInterface
             gridTS.DataSource = dataSetTaskList.Tables["child"].DefaultView;
             loadXML();
             loadPrefs();
+            loadUserDetails();
             cultureInfo = System.Globalization.CultureInfo.InvariantCulture;
         }
 
@@ -133,16 +135,43 @@ namespace MetroServerInterface
             {
                 line = line.Substring(line.IndexOf('R')+1, (line.IndexOf('N') - line.IndexOf('R')-1));
                 Console.WriteLine(line);
-
                 XmlDocument xmlStatus = new XmlDocument();
                 XmlElement root = (XmlElement) xmlStatus.AppendChild(xmlStatus.CreateElement("status"));
-                int count=0;
-                foreach (char ch in line.ToCharArray())
+                XmlReader xmlReader = null;
+                try
                 {
+                    xmlReader = XmlReader.Create("http://127.0.0.1/hc/db.xml");
+                }
+                catch (Exception e) { logError(e); }
+                List<String> commands = new List<String>();
+                while (xmlReader.Read())
+                {
+                    if(xmlReader.NodeType == XmlNodeType.Element)
+                    {
+                        if (xmlReader.LocalName.Equals("command"))
+                        {
+                            commands.Add(xmlReader.ReadElementContentAsString());
+                            //Console.WriteLine("CH : " + xmlReader.ReadElementContentAsString());
+                        }
+                    }
+                }
+
+                foreach (String str in commands)
+                {
+                    int o;
                     XmlElement child = (XmlElement)root.AppendChild(xmlStatus.CreateElement("child"));
-                    child.AppendChild(xmlStatus.CreateElement("command")).InnerText = count.ToString();
-                    child.AppendChild(xmlStatus.CreateElement("state")).InnerText = ch.ToString();
-                    count++;
+
+                    if (Int32.TryParse(str, out o))
+                    {
+                        child.AppendChild(xmlStatus.CreateElement("command")).InnerText = o.ToString();
+                        child.AppendChild(xmlStatus.CreateElement("state")).InnerText = line.ToCharArray().GetValue(o).ToString();
+                    } else
+                    {
+                        child.AppendChild(xmlStatus.CreateElement("command")).InnerText = str;
+                        child.AppendChild(xmlStatus.CreateElement("state")).InnerText = "0";
+                        //TODO fix output
+                    }
+
                 }
                 File.WriteAllText(webPath+"/status.xml", xmlStatus.OuterXml);
             }
@@ -164,7 +193,7 @@ namespace MetroServerInterface
         {
             string xml="";
             try {
-                xml = Base64Decode(File.ReadAllText("user.bin"));
+                xml = Base64Decode(File.ReadAllText(webPath+"/user.bin"));
             
                 XmlDocument xmlDoc = new XmlDocument();
                 xmlDoc.LoadXml(xml);
@@ -185,7 +214,7 @@ namespace MetroServerInterface
             XmlElement element = (XmlElement)xmlDoc.AppendChild(xmlDoc.CreateElement("details"));
             element.AppendChild(xmlDoc.CreateElement("username")).InnerText = txtUsername.Text;
             element.AppendChild(xmlDoc.CreateElement("password")).InnerText = Base64Encode(txtPassword.Text);
-            File.WriteAllText("user.bin", Base64Encode(xmlDoc.OuterXml));
+            File.WriteAllText(webPath+"/user.bin", Base64Encode(xmlDoc.OuterXml));
         }
 
         public void loadXML()
@@ -768,17 +797,19 @@ namespace MetroServerInterface
                                 string state = "";
                                 command = str.Substring(0, str.IndexOf('Y'));
                                 state = str.Substring(str.IndexOf('Y') + 1, 1);
-
-                                DataRow[] dataRowArray = dataSetTaskList.Tables[0].Select("childno=" + command);
-                                foreach (DataRow dataRow in dataRowArray)
+                                foreach (DataRow dataRow in dataSetTaskList.Tables[0].Rows)
                                 {
-                                    if (state.Equals("1"))
+                                    if (dataRow["childno"].ToString().Equals(command))
                                     {
-                                        dataRow["on"] = true;
-                                    }
-                                    else if (state.Equals("0"))
-                                    {
-                                        dataRow["off"] = true;
+                                        if (state.Equals("1"))
+                                        {
+                                            dataRow["on"] = true;
+                                        }
+                                        else if (state.Equals("0"))
+                                        {
+                                            dataRow["off"] = true;
+                                        }
+
                                     }
                                 }
                             }

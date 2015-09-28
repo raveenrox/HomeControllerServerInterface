@@ -147,7 +147,7 @@
             this.UITabs.Controls.Add(this.tabTaskScheduler);
             this.UITabs.Location = new System.Drawing.Point(23, 63);
             this.UITabs.Name = "UITabs";
-            this.UITabs.SelectedIndex = 0;
+            this.UITabs.SelectedIndex = 2;
             this.UITabs.Size = new System.Drawing.Size(466, 428);
             this.UITabs.TabIndex = 12;
             this.UITabs.Theme = MetroFramework.MetroThemeStyle.Light;
@@ -754,7 +754,7 @@
             // 
             this.dateTimeTSDate.Location = new System.Drawing.Point(90, 38);
             this.dateTimeTSDate.MinDate = new System.DateTime(2015, 1, 1, 0, 0, 0, 0);
-            this.dateTimeTSDate.MinimumSize = new System.Drawing.Size(4, 29);
+            this.dateTimeTSDate.MinimumSize = new System.Drawing.Size(0, 29);
             this.dateTimeTSDate.Name = "dateTimeTSDate";
             this.dateTimeTSDate.Size = new System.Drawing.Size(200, 29);
             this.dateTimeTSDate.TabIndex = 2;

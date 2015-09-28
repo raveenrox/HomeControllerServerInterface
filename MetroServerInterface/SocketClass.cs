@@ -26,8 +26,7 @@ namespace MetroServerInterface
         public void StartListening()
         {
             byte[] bytes = new Byte[10240];
-            //TODO bind port
-            ipAddress = new IPAddress(new byte[] { 0, 0, 0, 0 });
+            ipAddress = new IPAddress(new byte[] { 127, 0, 0, 1 });
             IPEndPoint localEndPoint = new IPEndPoint(ipAddress, port);
             LingerOption lingerOption = new LingerOption(false, 0);
 
@@ -54,8 +53,8 @@ namespace MetroServerInterface
                         if (mainForm.accountVerify(data))
                         {
                             string incomming = data.Substring(0, data.IndexOf('@'));
-
-                            if (incomming.Equals("read") || incomming.Equals("clear") || incomming.Equals("init"))
+                            Console.WriteLine("IN : "+incomming);
+                            if (incomming.Equals("read") || incomming.Equals("clear") || incomming.Equals("init") || incomming.Equals("restart"))
                             {
                                 msg = Encoding.ASCII.GetBytes("PERM_DENIED");
                                 mainForm.logError(msg.ToString());
