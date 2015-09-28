@@ -11,6 +11,7 @@ using System.Xml;
 using System.IO;
 using System.Xml.XPath;
 using System.Collections.Generic;
+using System.Collections;
 
 namespace MetroServerInterface
 {
@@ -26,6 +27,8 @@ namespace MetroServerInterface
 
         private TaskService taskService;
         private System.Globalization.CultureInfo cultureInfo;
+
+        bool[] customArr = new bool[] {false, false, false, false, false};
 
         public mainUI()
         {
@@ -142,20 +145,19 @@ namespace MetroServerInterface
                 {
                     xmlReader = XmlReader.Create("http://127.0.0.1/hc/db.xml");
                 }
-                catch (Exception e) { logError(e); }
+                catch (Exception e) { Console.WriteLine(e.StackTrace); logError(e); }
                 List<String> commands = new List<String>();
                 while (xmlReader.Read())
                 {
                     if(xmlReader.NodeType == XmlNodeType.Element)
                     {
-                        if (xmlReader.LocalName.Equals("command"))
+                        if (xmlReader.Name.Equals("command"))
                         {
                             commands.Add(xmlReader.ReadElementContentAsString());
-                            //Console.WriteLine("CH : " + xmlReader.ReadElementContentAsString());
                         }
                     }
                 }
-
+                int tempCount = 0;
                 foreach (String str in commands)
                 {
                     int o;
@@ -168,9 +170,19 @@ namespace MetroServerInterface
                     } else
                     {
                         child.AppendChild(xmlStatus.CreateElement("command")).InnerText = str;
-                        child.AppendChild(xmlStatus.CreateElement("state")).InnerText = "0";
+                        /*String cval = "";
+                        Console.WriteLine(str);
+                        if (customArr[tempCount])
+                        {
+                            cval = "1";
+                        } else
+                        {
+                            cval = "0";
+                        }*/
+                        child.AppendChild(xmlStatus.CreateElement("state")).InnerText = "1";
                         //TODO fix output
                     }
+                    tempCount++;
 
                 }
                 File.WriteAllText(webPath+"/status.xml", xmlStatus.OuterXml);
@@ -317,7 +329,45 @@ namespace MetroServerInterface
 
         public void setLabelText(string text)
         {
-            if (text != "ping")
+            if(text == "Garage" || text=="XGarageY1Z" || text == "XGarageY0Z")
+            {
+                writeSerial2("Garage");
+            } else if (text == "Gate" || text == "XGateY1Z" || text == "XGateY0Z")
+            {
+                writeSerial2("Gate");
+            } else if (text == "Door" || text == "XDoorY1Z" || text == "XDoorY0Z")
+            {
+                writeSerial2("Door");
+            } else if (text == "ClothLine" || text == "XClothLineY1Z" || text == "XClothLineY0Z")
+            {
+                writeSerial2("ClothLine");
+            }
+            else if (text == "Fan" || text == "XFanY1Z" || text == "XFanY0Z")
+            {
+                writeSerial2("Fan");
+            } else if(text == "Temp")
+            {
+                writeSerial2("Temp");
+            } else if (text == "IRPowerOn" || text == "XIRPowerOnY0Z" || text == "XIRPowerOnY1Z") {
+                writeSerial("powerOn");
+            }
+            else if (text == "IRPowerOff" || text == "XIRPowerOffY0Z" || text == "XIRPowerOffY1Z")
+            {
+                writeSerial("powerOff");
+            }
+            else if (text == "IROn" || text == "XIROnY0Z" || text == "XIROnY1Z")
+            {
+                writeSerial("pioneerOn");
+            }
+            else if (text == "IREject" || text == "XIREjectY0Z" || text == "XIREjectY1Z")
+            {
+                writeSerial("pioneerOpen");
+            }
+            else if (text == "GetIR" || text == "XGetIRY0Z" || text == "XGetIRY1Z")
+            {
+                writeSerial("getIR");
+            }
+            else if(text != "ping")
             {
                 changeTextBox(txtMsg, text);
                 writeSerial(txtMsg.Text);
@@ -460,11 +510,31 @@ namespace MetroServerInterface
                         if (serialPortMain.IsOpen)
                         {
                             curLine = serialPortMain.ReadLine();
+                            if (curLine.StartsWith("Fan")) {
+                                writeSerial2("Fan");
+                                Console.WriteLine("Fan");
+                            } else if (curLine.StartsWith("Garage")) {
+                                writeSerial2("Garage");
+                                Console.WriteLine("Garage");
+                            } else if (curLine.StartsWith("Gate")) {
+                                writeSerial2("Gate");
+                                Console.WriteLine("Gate");
+                            } else if (curLine.StartsWith("ClothLine")) {
+                                writeSerial2("ClothLine");
+                                Console.WriteLine("ClothLine");
+                            } else if(curLine.StartsWith("Door")) {
+                                writeSerial2("Door");
+                                Console.WriteLine("Door");
+                            }
                             if (prevLine != curLine)
                             {
-                                changeLabel(lblOut, curLine);
+                                if (curLine[0] == 'R' && curLine[curLine.Length-2] == 'N')
+                                {
+                                    changeLabel(lblOut, curLine);
+                                    saveXML(curLine);
+                                }
                                 consoleAddLine(txtConsoleMain, curLine);
-                                saveXML(curLine);
+                                
                             }
                             prevLine = curLine;
                         }
@@ -476,6 +546,7 @@ namespace MetroServerInterface
                     }
                     catch (Exception ex)
                     {
+                        Console.WriteLine(ex.StackTrace);
                         changeLabel(lblStatusBar, ex.Message);
                         changeLabel(lblStatusBar, "Please open a port");
                         logError(ex);
@@ -568,6 +639,7 @@ namespace MetroServerInterface
             foreach (string port in ports)
             {
                 comboBoxPorts.Items.Add(port);
+                comboBoxPorts2.Items.Add(port);
             }
             comboBoxPorts.Text = "Please select a port!";
         }
@@ -834,6 +906,206 @@ namespace MetroServerInterface
         private void mainUI_FormClosing(object sender, FormClosingEventArgs e)
         {
             Environment.Exit(0);
+        }
+
+        public void openPort2()
+        {
+            try
+            {
+                if (comboBoxPorts2.SelectedItem.ToString() == "Please Select a Port" || comboBoxPorts2.SelectedItem.ToString().Equals(""))
+                {
+                    lblStatusBar.Text = "Please select a port 2";
+                }
+                else
+                {
+                    try
+                    {
+                        serialPortSecond.PortName = comboBoxPorts2.SelectedItem.ToString();
+                        serialPortSecond.Open();
+                        comboBoxPorts2.Enabled = false;
+                        tileOpenPort2.Enabled = false;
+                        tileOpenPort2.UseCustomBackColor = true;
+                        tileClosePort2.Enabled = true;
+                        tileClosePort2.UseCustomBackColor = false;
+                        lblStatusBar.Text = serialPortSecond.PortName + " Port Opened";
+                    }
+                    catch (Exception ex)
+                    {
+                        lblStatusBar.Text = serialPortSecond.PortName + " Port is already open";
+                        Console.Write(ex.Message);
+                        logError(ex);
+                    }
+                }
+            }
+            catch (NullReferenceException e) { lblStatusBar.Text = "Please select a port"; logError(e); }
+        }
+
+        public void closePort2()
+        {
+            try
+            {
+                serialPortSecond.Close();
+                if (comboBoxPorts2.InvokeRequired)
+                {
+                    comboBoxPorts2.Invoke(new MethodInvoker(delegate { comboBoxPorts2.Enabled = true; }));
+                }
+                if (tileOpenPort2.InvokeRequired)
+                {
+                    tileOpenPort2.Invoke(new MethodInvoker(delegate
+                    {
+                        tileOpenPort2.Enabled = true;
+                        tileOpenPort2.UseCustomBackColor = false;
+                    }));
+                }
+                if (tileClosePort2.InvokeRequired)
+                {
+                    tileClosePort2.Invoke(new MethodInvoker(delegate
+                    {
+                        tileClosePort2.Enabled = false;
+                        tileClosePort2.UseCustomBackColor = true;
+                    }));
+                }
+                if (tileListenPort2.InvokeRequired)
+                {
+                    tileListenPort2.Invoke(new MethodInvoker(delegate
+                    {
+                        tileListenPort2.Enabled = true;
+                        tileListenPort2.UseCustomBackColor = false;
+                    }));
+                }
+                changeLabel(lblStatusBar, serialPortSecond.PortName + " Port Closed");
+            }
+            catch (Exception ex)
+            {
+                lblStatusBar.Text = ex.Message;
+                logError(ex);
+            }
+        }
+
+        public void listenPort2()
+        {
+            new Thread(() =>
+            {
+                String prevLine = "";
+                String curLine = "";
+
+                changeLabel(lblStatusBar, "Listening...");
+
+                while (true)
+                {
+                    try
+                    {
+                        if (serialPortSecond.IsOpen)
+                        {
+                            curLine = serialPortSecond.ReadLine();
+                            if (prevLine != curLine)
+                            {
+                                if (curLine[0] == 'R' && curLine[curLine.Length - 2] == 'N')
+                                {
+                                    changeLabel(lblOut, curLine);
+                                    saveXML(curLine);
+                                }
+                                if(curLine.StartsWith("Fan On"))
+                                {
+                                    customArr[0] = true;
+                                }else if (curLine.StartsWith("Fan Off"))
+                                {
+                                    customArr[0] = false;
+                                }
+                                else if(curLine.StartsWith("Closing Garage Door"))
+                                {
+                                    customArr[1] = true;
+                                }
+                                else if (curLine.StartsWith("Opening Garage Door"))
+                                {
+                                    customArr[1] = true;
+                                }
+                                else if (curLine.StartsWith("Opening Gate"))
+                                {
+                                    customArr[2] = true;
+                                }
+                                else if (curLine.StartsWith("Closing Gate"))
+                                {
+                                    customArr[2] = true;
+                                }
+                                else if (curLine.StartsWith("Unlocking Door"))
+                                {
+                                    customArr[3] = true;
+                                }
+                                else if (curLine.StartsWith("Locking Door"))
+                                {
+                                    customArr[3] = true;
+                                }
+                                else if (curLine.StartsWith("Opening Cloth Line"))
+                                {
+                                    customArr[4] = true;
+                                }
+                                else if (curLine.StartsWith("Closing Cloth Line"))
+                                {
+                                    customArr[4] = true;
+                                }
+                                else
+                                    consoleAddLine(txtConsoleMain, curLine);
+                            }
+                            prevLine = curLine;
+                        }
+                        else
+                        {
+                            closePort2();
+                            Thread.CurrentThread.Abort();
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine(ex.StackTrace);
+                        changeLabel(lblStatusBar, ex.Message);
+                        changeLabel(lblStatusBar, "Please open a port");
+                        logError(ex);
+                    }
+                }
+            }).Start();
+        }
+
+        public void writeSerial2(string str)
+        {
+            try
+            {
+                if (serialPortSecond.IsOpen)
+                {
+                    serialPortSecond.Write(str);
+                }
+                else
+                {
+                    changeLabel(lblStatusBar, "Pease open a port");
+                }
+            }
+            catch (Exception ex)
+            {
+                changeLabel(lblStatusBar, ex.Message);
+                logError(ex);
+            }
+        }
+
+        private void tileOpenPort2_Click(object sender, EventArgs e)
+        {
+            openPort2();
+        }
+
+        private void tileClosePort2_Click(object sender, EventArgs e)
+        {
+            closePort2();
+        }
+
+        private void tileListenPort2_Click(object sender, EventArgs e)
+        {
+            listenPort2();
+            tileListenPort2.Enabled = false;
+            tileListenPort2.UseCustomBackColor = true;
+        }
+
+        private void tileWritePort2_Click(object sender, EventArgs e)
+        {
+            writeSerial2(txtMsg2.Text);
         }
     }
 }

@@ -86,7 +86,17 @@
             this.lblTSDate = new MetroFramework.Controls.MetroLabel();
             this.dateTimeTSTime = new System.Windows.Forms.DateTimePicker();
             this.dateTimeTSDate = new MetroFramework.Controls.MetroDateTime();
+            this.tabSettings2 = new MetroFramework.Controls.MetroTabPage();
+            this.lblOut2 = new MetroFramework.Controls.MetroLabel();
+            this.lblMsg2 = new MetroFramework.Controls.MetroLabel();
+            this.tileListenPort2 = new MetroFramework.Controls.MetroTile();
+            this.txtMsg2 = new MetroFramework.Controls.MetroTextBox();
+            this.tileWritePort2 = new MetroFramework.Controls.MetroTile();
+            this.tileOpenPort2 = new MetroFramework.Controls.MetroTile();
+            this.tileClosePort2 = new MetroFramework.Controls.MetroTile();
+            this.comboBoxPorts2 = new MetroFramework.Controls.MetroComboBox();
             this.serialPortMain = new System.IO.Ports.SerialPort(this.components);
+            this.serialPortSecond = new System.IO.Ports.SerialPort(this.components);
             this.UITabs.SuspendLayout();
             this.tabSettings.SuspendLayout();
             this.tabConsole.SuspendLayout();
@@ -94,6 +104,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.gridTS)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dataSetTaskList)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dataTable1)).BeginInit();
+            this.tabSettings2.SuspendLayout();
             this.SuspendLayout();
             // 
             // tileColsePort
@@ -145,9 +156,10 @@
             this.UITabs.Controls.Add(this.tabSettings);
             this.UITabs.Controls.Add(this.tabConsole);
             this.UITabs.Controls.Add(this.tabTaskScheduler);
+            this.UITabs.Controls.Add(this.tabSettings2);
             this.UITabs.Location = new System.Drawing.Point(23, 63);
             this.UITabs.Name = "UITabs";
-            this.UITabs.SelectedIndex = 2;
+            this.UITabs.SelectedIndex = 0;
             this.UITabs.Size = new System.Drawing.Size(466, 428);
             this.UITabs.TabIndex = 12;
             this.UITabs.Theme = MetroFramework.MetroThemeStyle.Light;
@@ -754,10 +766,124 @@
             // 
             this.dateTimeTSDate.Location = new System.Drawing.Point(90, 38);
             this.dateTimeTSDate.MinDate = new System.DateTime(2015, 1, 1, 0, 0, 0, 0);
-            this.dateTimeTSDate.MinimumSize = new System.Drawing.Size(0, 29);
+            this.dateTimeTSDate.MinimumSize = new System.Drawing.Size(4, 29);
             this.dateTimeTSDate.Name = "dateTimeTSDate";
             this.dateTimeTSDate.Size = new System.Drawing.Size(200, 29);
             this.dateTimeTSDate.TabIndex = 2;
+            // 
+            // tabSettings2
+            // 
+            this.tabSettings2.Controls.Add(this.lblOut2);
+            this.tabSettings2.Controls.Add(this.lblMsg2);
+            this.tabSettings2.Controls.Add(this.tileListenPort2);
+            this.tabSettings2.Controls.Add(this.txtMsg2);
+            this.tabSettings2.Controls.Add(this.tileWritePort2);
+            this.tabSettings2.Controls.Add(this.tileOpenPort2);
+            this.tabSettings2.Controls.Add(this.tileClosePort2);
+            this.tabSettings2.Controls.Add(this.comboBoxPorts2);
+            this.tabSettings2.HorizontalScrollbarBarColor = true;
+            this.tabSettings2.HorizontalScrollbarHighlightOnWheel = false;
+            this.tabSettings2.HorizontalScrollbarSize = 10;
+            this.tabSettings2.Location = new System.Drawing.Point(4, 38);
+            this.tabSettings2.Name = "tabSettings2";
+            this.tabSettings2.Size = new System.Drawing.Size(458, 386);
+            this.tabSettings2.TabIndex = 5;
+            this.tabSettings2.Text = "Settings Secondary";
+            this.tabSettings2.VerticalScrollbarBarColor = true;
+            this.tabSettings2.VerticalScrollbarHighlightOnWheel = false;
+            this.tabSettings2.VerticalScrollbarSize = 10;
+            // 
+            // lblOut2
+            // 
+            this.lblOut2.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.lblOut2.Location = new System.Drawing.Point(22, 244);
+            this.lblOut2.Name = "lblOut2";
+            this.lblOut2.Size = new System.Drawing.Size(206, 23);
+            this.lblOut2.TabIndex = 26;
+            // 
+            // lblMsg2
+            // 
+            this.lblMsg2.AutoSize = true;
+            this.lblMsg2.Location = new System.Drawing.Point(22, 215);
+            this.lblMsg2.Name = "lblMsg2";
+            this.lblMsg2.Size = new System.Drawing.Size(60, 19);
+            this.lblMsg2.TabIndex = 30;
+            this.lblMsg2.Text = "Message";
+            // 
+            // tileListenPort2
+            // 
+            this.tileListenPort2.ActiveControl = null;
+            this.tileListenPort2.BackColor = System.Drawing.Color.DimGray;
+            this.tileListenPort2.Location = new System.Drawing.Point(22, 273);
+            this.tileListenPort2.Name = "tileListenPort2";
+            this.tileListenPort2.Size = new System.Drawing.Size(100, 100);
+            this.tileListenPort2.TabIndex = 29;
+            this.tileListenPort2.Text = "Listen";
+            this.tileListenPort2.UseSelectable = true;
+            this.tileListenPort2.Click += new System.EventHandler(this.tileListenPort2_Click);
+            // 
+            // txtMsg2
+            // 
+            this.txtMsg2.Lines = new string[] {
+        "X0Y0Z"};
+            this.txtMsg2.Location = new System.Drawing.Point(88, 215);
+            this.txtMsg2.MaxLength = 32767;
+            this.txtMsg2.Name = "txtMsg2";
+            this.txtMsg2.PasswordChar = '\0';
+            this.txtMsg2.ScrollBars = System.Windows.Forms.ScrollBars.None;
+            this.txtMsg2.SelectedText = "";
+            this.txtMsg2.Size = new System.Drawing.Size(140, 23);
+            this.txtMsg2.TabIndex = 27;
+            this.txtMsg2.Text = "X0Y0Z";
+            this.txtMsg2.UseSelectable = true;
+            // 
+            // tileWritePort2
+            // 
+            this.tileWritePort2.ActiveControl = null;
+            this.tileWritePort2.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(176)))), ((int)(((byte)(27)))), ((int)(((byte)(156)))));
+            this.tileWritePort2.Location = new System.Drawing.Point(128, 273);
+            this.tileWritePort2.Name = "tileWritePort2";
+            this.tileWritePort2.Size = new System.Drawing.Size(100, 100);
+            this.tileWritePort2.TabIndex = 28;
+            this.tileWritePort2.Text = "Write";
+            this.tileWritePort2.UseSelectable = true;
+            this.tileWritePort2.Click += new System.EventHandler(this.tileWritePort2_Click);
+            // 
+            // tileOpenPort2
+            // 
+            this.tileOpenPort2.ActiveControl = null;
+            this.tileOpenPort2.BackColor = System.Drawing.Color.DimGray;
+            this.tileOpenPort2.Location = new System.Drawing.Point(22, 61);
+            this.tileOpenPort2.Name = "tileOpenPort2";
+            this.tileOpenPort2.Size = new System.Drawing.Size(100, 100);
+            this.tileOpenPort2.TabIndex = 24;
+            this.tileOpenPort2.Text = "Open\r\nSerial Port";
+            this.tileOpenPort2.UseSelectable = true;
+            this.tileOpenPort2.Click += new System.EventHandler(this.tileOpenPort2_Click);
+            // 
+            // tileClosePort2
+            // 
+            this.tileClosePort2.ActiveControl = null;
+            this.tileClosePort2.BackColor = System.Drawing.Color.DimGray;
+            this.tileClosePort2.Enabled = false;
+            this.tileClosePort2.Location = new System.Drawing.Point(128, 61);
+            this.tileClosePort2.Name = "tileClosePort2";
+            this.tileClosePort2.Size = new System.Drawing.Size(100, 100);
+            this.tileClosePort2.TabIndex = 23;
+            this.tileClosePort2.Text = "Close\r\nSerial Port";
+            this.tileClosePort2.UseCustomBackColor = true;
+            this.tileClosePort2.UseSelectable = true;
+            this.tileClosePort2.Click += new System.EventHandler(this.tileClosePort2_Click);
+            // 
+            // comboBoxPorts2
+            // 
+            this.comboBoxPorts2.FormattingEnabled = true;
+            this.comboBoxPorts2.ItemHeight = 23;
+            this.comboBoxPorts2.Location = new System.Drawing.Point(22, 26);
+            this.comboBoxPorts2.Name = "comboBoxPorts2";
+            this.comboBoxPorts2.Size = new System.Drawing.Size(206, 29);
+            this.comboBoxPorts2.TabIndex = 25;
+            this.comboBoxPorts2.UseSelectable = true;
             // 
             // mainUI
             // 
@@ -781,6 +907,8 @@
             ((System.ComponentModel.ISupportInitialize)(this.gridTS)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.dataSetTaskList)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.dataTable1)).EndInit();
+            this.tabSettings2.ResumeLayout(false);
+            this.tabSettings2.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -841,6 +969,16 @@
         private MetroFramework.Controls.MetroLabel lblTSName;
         private MetroFramework.Controls.MetroTile tileTSReset;
         private MetroFramework.Controls.MetroTile tileTSAdd;
+        private System.IO.Ports.SerialPort serialPortSecond;
+        private MetroFramework.Controls.MetroTabPage tabSettings2;
+        public MetroFramework.Controls.MetroLabel lblOut2;
+        private MetroFramework.Controls.MetroLabel lblMsg2;
+        private MetroFramework.Controls.MetroTile tileListenPort2;
+        private MetroFramework.Controls.MetroTextBox txtMsg2;
+        private MetroFramework.Controls.MetroTile tileWritePort2;
+        private MetroFramework.Controls.MetroTile tileOpenPort2;
+        private MetroFramework.Controls.MetroTile tileClosePort2;
+        private MetroFramework.Controls.MetroComboBox comboBoxPorts2;
     }
 }
 

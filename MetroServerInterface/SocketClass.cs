@@ -25,8 +25,9 @@ namespace MetroServerInterface
 
         public void StartListening()
         {
+            //TODO bind port
             byte[] bytes = new Byte[10240];
-            ipAddress = new IPAddress(new byte[] { 127, 0, 0, 1 });
+            ipAddress = new IPAddress(new byte[] { 0, 0, 0, 0 });
             IPEndPoint localEndPoint = new IPEndPoint(ipAddress, port);
             LingerOption lingerOption = new LingerOption(false, 0);
 
